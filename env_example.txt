@@ -1,0 +1,7 @@
+# OpenAI API Key
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Email Settings (Gmail)
+EMAIL_SENDER=your_email@gmail.com
+EMAIL_PASSWORD=your_app_password_here
+EMAIL_RECEIVER=recipient_email@example.com
