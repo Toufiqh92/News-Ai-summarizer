@@ -1,29 +1,32 @@
 import openai
 from config import OPENAI_API_KEY
-
+'''
+ most of the code here is for summarizing news using OpenAI's GPT model and handling errors.
+ The summarization function formats the headlines and sends them to the AI for a concise summary. 
+ It also uses code proveded by open ai's documentation and examples to ensure best practices are followed.
+'''
 def setup_openai():
-    """Setup OpenAI client"""
     openai.api_key = OPENAI_API_KEY
 
 def summarize_news(headlines):
-    """Use OpenAI to summarize the news headlines"""
-    if not headlines:
+    if not headlines:  # safety check
         return "No news headlines found to summarize."
-    
     try:
-        # Create a simple prompt
+        # Format titles + links
+        formatted_headlines = [
+            f"- {h['title']} ({h['url']})" if h.get("url") else f"- {h['title']}"
+            for h in headlines
+        ]
         prompt = f"""
         Here are today's top New York news headlines. Please provide a brief, professional summary of the main stories:
-        
-        {chr(10).join([f"- {headline}" for headline in headlines])}
+        {chr(10).join(formatted_headlines)}
         
         Summary:
         """
-        
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful news summarizer. Provide concise, professional summaries of news headlines."},
+            messages=[ 
+                {"role": "system", "content": "To the best of your abilites for each respective article you are given a link. Give a brief summary of the article in 1-2 sentences. The summary should be engaging enought for a reader to want to click the link and read more. Do not make up any information that is not in the article. If you are not given a link, just summarize the headline."},
                 {"role": "user", "content": prompt}
             ],
             max_tokens=300,
@@ -32,32 +35,34 @@ def summarize_news(headlines):
         
         summary = response.choices[0].message.content.strip()
         return summary
-        
-    except Exception as e:
+
+    except Exception as e: # these are error handling. If the AI fails, we fall back to manual summary
         print(f"Error getting AI summary: {e}")
-        # Fallback to manual summary
         return create_manual_summary(headlines)
 
-def create_manual_summary(headlines):
-    """Create a simple manual summary if AI fails"""
+def create_manual_summary(headlines): # this is a saftey net in case the AI fails
     if not headlines:
         return "No news headlines available."
-    
+    # simple manual summary
     summary = "Today's Top New York News:\n\n"
-    for i, headline in enumerate(headlines[:10], 1):
-        summary += f"{i}. {headline}\n"
-    
-    summary += f"\nTotal stories: {len(headlines)}"
-    return summary
 
-if __name__ == "__main__":
-    # Test with sample headlines
+#this algorithm lists the top 10 headlines with their links if available. This is an alogrithm created to fall back on if the AI fails.
+    for i, h in enumerate(headlines[:10], 1):
+        if isinstance(h, dict): 
+            title = h.get("title", "No title") # safety check
+            url = f" ({h['url']})" if h.get("url") else "" # safety check
+            summary += f"{i}. {title}{url}\n"
+        else: # in case the headline is just a string
+            summary += f"{i}. {h}\n" # safety check
+    summary += f"\nTotal stories: {len(headlines)}" # count of stories
+    return summary 
+if __name__ == "__main__": # this is for testing purposes only
+    # Example headlines for testing
     test_headlines = [
-        "New York City Announces New Transportation Plan",
-        "Local Business Owners React to Economic Changes",
-        "Weather Alert: Storm Expected This Weekend"
+        {"title": "New York City Announces New Transportation Plan", "url": "https://example.com/transport"},
+        {"title": "Local Business Owners React to Economic Changes", "url": "https://example.com/business"},
+        {"title": "Weather Alert: Storm Expected This Weekend", "url": "https://example.com/weather"},
     ]
-    
     setup_openai()
     summary = summarize_news(test_headlines)
     print(summary)
