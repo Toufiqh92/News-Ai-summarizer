@@ -1,7 +1,7 @@
 import openai
 from config import OPENAI_API_KEY
 '''
- most of the code here is for summarizing news using OpenAI's GPT model and handling errors.
+ most of the code here is for summarizing news using OpenAI's GPT model and handling errors. 
  The summarization function formats the headlines and sends them to the AI for a concise summary. 
  It also uses code proveded by open ai's documentation and examples to ensure best practices are followed.
 '''
@@ -35,7 +35,6 @@ def summarize_news(headlines):
         
         summary = response.choices[0].message.content.strip()
         return summary
-
     except Exception as e: # these are error handling. If the AI fails, we fall back to manual summary
         print(f"Error getting AI summary: {e}")
         return create_manual_summary(headlines)
