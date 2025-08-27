@@ -5,7 +5,6 @@ from config import EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECEIVER
 import datetime
 
 def send_news_email(summary):
-    """Send news summary via email"""
     try:
         # Create message
         msg = MIMEMultipart()

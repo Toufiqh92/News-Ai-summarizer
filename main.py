@@ -52,7 +52,7 @@ def schedule_daily():
 if __name__ == "__main__":
     print("New York News Summarizer")
     print("=" * 30)
-    
+    # Ensure the API key is set 
     if not OPENAI_API_KEY:
         print("Error: OPENAI_API_KEY not found in environment variables")
         print("Please create a .env file with your API keys")

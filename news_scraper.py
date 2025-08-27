@@ -24,14 +24,14 @@ def get_nypost_headlines(): # Get headlines from NY Post
     try:
         response = requests.get("https://nypost.com", headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
         soup = BeautifulSoup(response.content, "html.parser")
-
+# Get headlines and links
         headlines = []
         for tag in soup.find_all(["h1", "h2", "h3"])[:15]:
             text = tag.get_text(strip=True)
             link = tag.find("a")
             if text and len(text) > 15 and link and link.get("href"):
                 url = link["href"]
-                if url.startswith("/"):
+                if url.startswith("/"): # Relative URL
                     url = "https://nypost.com" + url
                 headlines.append({"title": text, "url": url})
 

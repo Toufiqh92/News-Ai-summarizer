@@ -26,7 +26,15 @@ def summarize_news(headlines):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[ 
-                {"role": "system", "content": "To the best of your abilites for each respective article you are given a link. Give a brief summary of the article in 1-2 sentences. The summary should be engaging enought for a reader to want to click the link and read more. Do not make up any information that is not in the article. If you are not given a link, just summarize the headline."},
+                {
+                    "role": "system",
+                    "content": (
+                        "For each article, you are given a headline and a link. "
+                        "Summarize each article in 1-2 sentences. "
+                        "At the end of each summary, include the article's link in parentheses. "
+                        "If no link is provided, just summarize the headline."
+                    )
+                },
                 {"role": "user", "content": prompt}
             ],
             max_tokens=300,
