@@ -2,16 +2,24 @@ import requests
 from bs4 import BeautifulSoup
 import time, random
 
+'''
+This file contains functions to scrape news headlines from various New York news sources.
+Each function targets a specific news website, extracts headlines and their links, and returns them in a
+standardized format.
+The main function `scrape_all_news` aggregates headlines from all sources and ensures uniqueness.
+
+'''
 def get_nytimes_headlines():
     try:
-        response = requests.get("https://www.nytimes.com", headers={"User-Agent": "Mozilla/5.0"}, timeout=10) # NY Times
+        response = requests.get("https://www.nytimes.com", headers={"User-Agent": "Mozilla/5.0"}, timeout=10) 
+        # the avove line pretends to be a browser to avoid being blocked by the website and sets a timeout of 10 seconds to avoid hanging
         soup = BeautifulSoup(response.content, "html.parser")  # Parse HTML
-        headlines = [] # Store headlines
-        for tag in soup.find_all(["h1", "h2", "h3"])[:15]: # Look for headline tags
+        headlines = [] # Store headlines in a list
+        for tag in soup.find_all(["h1", "h2", "h3"])[:15]: # Look for headline tags. this is a common pattern in news sites
             text = tag.get_text(strip=True) # Get text
             link = tag.find("a") # Find link
             if text and link and link.get("href"): # Ensure valid headline and link
-                url = link["href"]
+                url = link["href"] # Get URL 
                 if url.startswith("/"): # Relative URL
                     url = "https://www.nytimes.com" + url
                 headlines.append({"title": text, "url": url}) #
@@ -38,12 +46,11 @@ def get_nypost_headlines(): # Get headlines from NY Post
         return headlines[:5]
     except Exception as e:
         print(f"Error scraping NY Post: {e}")
-        return []
+        return [] 
 def get_amny_headlines():
     try:
-        response = requests.get("https://www.amny.com", headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
+        response = requests.get("https://www.amny.com", headers={"User-Agent": "Mozilla/5.0"}, timeout=10) 
         soup = BeautifulSoup(response.content, "html.parser")
-
         headlines = []
         for tag in soup.find_all(["h1", "h2", "h3"])[:15]:
             text = tag.get_text(strip=True)
@@ -61,9 +68,11 @@ def get_amny_headlines():
 def scrape_all_news():
     """Scrape all news sources and combine unique headlines"""
     print("Starting news scraping...")
-    all_headlines = []
+    all_headlines = [] # Initialize list
 
-    # Scrape each source
+    # Scrape each source then store them in all_headlines list
+    # Adding random sleep to mimic human behavior and avoid being blocked. This is a good practice when scraping websites.
+
     all_headlines.extend(get_nytimes_headlines())
     time.sleep(random.uniform(1, 3))
 
@@ -71,8 +80,10 @@ def scrape_all_news():
     time.sleep(random.uniform(1, 3))
 
     all_headlines.extend(get_amny_headlines())
+    time.sleep(random.uniform(1, 3))
 
-    # Deduplicate by title
+    # Deduplicate by title 
+    # if the headline is unique we store it in the "unique_headlines" variable .
     seen = set()
     unique_headlines = []
     for h in all_headlines:
@@ -82,7 +93,7 @@ def scrape_all_news():
 
     print(f"Scraped {len(unique_headlines)} headlines")
     return unique_headlines[:15]
-
+# this function is for testing purposes only 
 if __name__ == "__main__":
     headlines = scrape_all_news()
     for i, item in enumerate(headlines, 1):

@@ -3,7 +3,11 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECEIVER
 import datetime
-
+'''
+smtp is used to send the email using gmail's smtp server.
+This function creates the email content and sends it to the receiver.
+MIMEText and MIMEMultipart are used to create the email content with proper formatting.
+'''
 def send_news_email(summary):
     try:
         # Create message
@@ -26,7 +30,7 @@ def send_news_email(summary):
         Your News Summarizer
         """
         
-        msg.attach(MIMEText(body, 'plain'))
+        msg.attach(MIMEText(body, 'plain')) # attach the body to the email
         
         # Send email
         server = smtplib.SMTP('smtp.gmail.com', 587)
@@ -43,7 +47,7 @@ def send_news_email(summary):
     except Exception as e:
         print(f"Error sending email: {e}")
         return False
-
+    
 def test_email():
     """Test email functionality"""
     test_summary = "This is a test summary to check if email sending works."

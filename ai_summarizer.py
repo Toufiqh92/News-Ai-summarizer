@@ -1,13 +1,16 @@
 import openai
 from config import OPENAI_API_KEY
+
 '''
  most of the code here is for summarizing news using OpenAI's GPT model and handling errors. 
  The summarization function formats the headlines and sends them to the AI for a concise summary. 
  It also uses code proveded by open ai's documentation and examples to ensure best practices are followed.
 '''
+# this function sets up the OpenAI API key. This is called in main.py before any AI requests are made.
+
 def setup_openai():
     openai.api_key = OPENAI_API_KEY
-
+# this function summarizes the news headlines using OpenAI's GPT model.
 def summarize_news(headlines):
     if not headlines:  # safety check
         return "No news headlines found to summarize."
@@ -32,7 +35,6 @@ def summarize_news(headlines):
                         "For each article, you are given a headline and a link. "
                         "Summarize each article in 1-2 sentences. "
                         "At the end of each summary, include the article's link in parentheses. "
-                        "If no link is provided, just summarize the headline."
                     )
                 },
                 {"role": "user", "content": prompt}
@@ -47,14 +49,16 @@ def summarize_news(headlines):
         print(f"Error getting AI summary: {e}")
         return create_manual_summary(headlines)
 
-def create_manual_summary(headlines): # this is a saftey net in case the AI fails
+def create_manual_summary(headlines): 
     if not headlines:
         return "No news headlines available."
     # simple manual summary
     summary = "Today's Top New York News:\n\n"
 
 #this algorithm lists the top 10 headlines with their links if available. This is an alogrithm created to fall back on if the AI fails.
-    for i, h in enumerate(headlines[:10], 1):
+# Loops through the first 10 headline
+
+    for i, h in enumerate(headlines[:10], 1): # makes numbering start at 1 instead of 0.
         if isinstance(h, dict): 
             title = h.get("title", "No title") # safety check
             url = f" ({h['url']})" if h.get("url") else "" # safety check
