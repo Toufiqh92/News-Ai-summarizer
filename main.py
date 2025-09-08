@@ -7,9 +7,8 @@ from config import OPENAI_API_KEY
 import datetime
 
 def daily_news_process():
-    """Main function to run the daily news process""" 
+    """Main process to scrape news, summarize, and send email"""
     print(f"Starting daily news process at {datetime.datetime.now()}")
-    
     try:
         # Step 1: Scrape news
         print("Scraping news headlines...")
@@ -33,18 +32,17 @@ def daily_news_process():
  # erorr handling if email fails to send
     except Exception as e:
         print(f"Error in daily news process: {e}")
-
+# when user wants to run the process once for testing this function will be called.
 def run_once():
     """Run the news process once (for testing)"""
     daily_news_process()
 
-#   Schedule the news process to run daily at 8 AM
+# when user wants to schedule the process daily at 8:00 am this function will be called.
 def schedule_daily():
     """Schedule the news process to run daily at 8 AM"""
     schedule.every().day.at("08:00").do(daily_news_process) # Schedule the job at 8:00 AM every day
     print("News summarizer scheduled to run daily at 8:00 AM") # Inform the user
     print("Press Ctrl+C to stop") # Inform the user how to stop the program 
-    
     while True:
         schedule.run_pending()
         time.sleep(60)  # Check every minute
